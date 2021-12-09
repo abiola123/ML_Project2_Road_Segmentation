@@ -13,6 +13,7 @@ import os
 import sys
 import urllib
 import matplotlib.image as mpimg
+import numpy as np
 from PIL import Image
 
 import code
@@ -25,13 +26,14 @@ import tensorflow as tf
 NUM_CHANNELS = 3  # RGB images
 PIXEL_DEPTH = 255
 NUM_LABELS = 2
-TRAINING_SIZE = 20
+TRAINING_SIZE = 800
 VALIDATION_SIZE = 5  # Size of the validation set.
 SEED = 66478  # Set to None for random seed.
 BATCH_SIZE = 16  # 64
 NUM_EPOCHS = 100
 RESTORE_MODEL = False  # If True, restore existing model instead of training a new one
 RECORDING_STEP = 0
+root_dir = "/Users/abiola/Documents/EPFL/ML_Project2_Road_Segmentation/Ressources/training/"
 
 # Set image patch size in pixels
 # IMG_PATCH_SIZE should be a multiple of 4
@@ -59,26 +61,28 @@ def img_crop(im, w, h):
             list_patches.append(im_patch)
     return list_patches
 
+def load_image(infilename):
+    data = mpimg.imread(infilename)
+    return data
+
 
 def extract_data(filename, num_images):
     """Extract the images into a 4D tensor [image index, y, x, channels].
     Values are rescaled from [0, 255] down to [-0.5, 0.5].
     """
     imgs = []
-    for i in range(1, num_images+1):
-        imageid = "satImage_%.3d" % i
-        image_filename = filename + imageid + ".png"
-        if os.path.isfile(image_filename):
-            print('Loading ' + image_filename)
-            img = mpimg.imread(image_filename)
-            imgs.append(img)
-        else:
-            print('File ' + image_filename + ' does not exist')
-
+    image_dir = root_dir + "out/images/"
+    files = os.listdir(image_dir)
+    n = num_images
+    print("Loading " + str(n) + " images")
+    imgs = [load_image(image_dir + files[i])[:,:,:3] for i in range(n)]
+    imgs = np.asarray(imgs)
     num_images = len(imgs)
     IMG_WIDTH = imgs[0].shape[0]
     IMG_HEIGHT = imgs[0].shape[1]
     N_PATCHES_PER_IMAGE = (IMG_WIDTH/IMG_PATCH_SIZE)*(IMG_HEIGHT/IMG_PATCH_SIZE)
+
+    print("NB patches / imgae: ", N_PATCHES_PER_IMAGE)
 
     img_patches = [img_crop(imgs[i], IMG_PATCH_SIZE, IMG_PATCH_SIZE) for i in range(num_images)]
     data = [img_patches[i][j] for i in range(len(img_patches)) for j in range(len(img_patches[i]))]
@@ -100,15 +104,13 @@ def value_to_class(v):
 def extract_labels(filename, num_images):
     """Extract the labels into a 1-hot matrix [image index, label index]."""
     gt_imgs = []
-    for i in range(1, num_images + 1):
-        imageid = "satImage_%.3d" % i
-        image_filename = filename + imageid + ".png"
-        if os.path.isfile(image_filename):
-            print('Loading ' + image_filename)
-            img = mpimg.imread(image_filename)
-            gt_imgs.append(img)
-        else:
-            print('File ' + image_filename + ' does not exist')
+    gt_dir = root_dir + "out/groundtruth/"
+    files = os.listdir(gt_dir)
+
+    n = num_images
+    print("Loading " + str(n) + " images")
+    gt_imgs = [load_image(gt_dir + files[i])[:,:,0] for i in range(n)]
+    gt_imgs = np.asarray(gt_imgs)
 
     num_images = len(gt_imgs)
     gt_patches = [img_crop(gt_imgs[i], IMG_PATCH_SIZE, IMG_PATCH_SIZE) for i in range(num_images)]
@@ -206,6 +208,10 @@ def main(argv=None):  # pylint: disable=unused-argument
     train_data = extract_data(train_data_filename, TRAINING_SIZE)
     train_labels = extract_labels(train_labels_filename, TRAINING_SIZE)
 
+    print("Train data shape: ",train_data.shape)
+    print("Train label shape: ",train_labels.shape)
+
+
     num_epochs = NUM_EPOCHS
 
     c0 = 0  # bgrd
@@ -218,6 +224,8 @@ def main(argv=None):  # pylint: disable=unused-argument
     print('Number of data points per class: c0 = ' + str(c0) + ' c1 = ' + str(c1))
 
     print('Balancing training data...')
+
+
     min_c = min(c0, c1)
     idx0 = [i for i, j in enumerate(train_labels) if j[0] == 1]
     idx1 = [i for i, j in enumerate(train_labels) if j[1] == 1]
@@ -237,6 +245,7 @@ def main(argv=None):  # pylint: disable=unused-argument
         else:
             c1 = c1 + 1
     print('Number of data points per class: c0 = ' + str(c0) + ' c1 = ' + str(c1))
+
 
     # This is where training samples and labels are fed to the graph.
     # These placeholder nodes will be fed a batch of training data at each
@@ -309,9 +318,14 @@ def main(argv=None):  # pylint: disable=unused-argument
     # Get a concatenation of the prediction and groundtruth for given input file
     def get_prediction_with_groundtruth(filename, image_idx):
 
-        imageid = "satImage_%.3d" % image_idx
-        image_filename = filename + imageid + ".png"
-        img = mpimg.imread(image_filename)
+        img_dir = root_dir + "out/images/"
+        
+        #imageid = "satImage_%.3d" % image_idx + ".png"
+        imageid = str(image_idx) + ".png"
+
+        image_filename = filename + imageid 
+        img = load_image(img_dir + imageid)[:,:,:3]
+
 
         img_prediction = get_prediction(img)
         cimg = concatenate_images(img, img_prediction)
@@ -321,9 +335,14 @@ def main(argv=None):  # pylint: disable=unused-argument
     # Get prediction overlaid on the original image for given input file
     def get_prediction_with_overlay(filename, image_idx):
 
-        imageid = "satImage_%.3d" % image_idx
-        image_filename = filename + imageid + ".png"
-        img = mpimg.imread(image_filename)
+        img_dir = root_dir + "out/images/"
+        
+        #imageid = "satImage_%.3d" % image_idx + ".png"
+        imageid = str(image_idx) + ".png"
+
+        image_filename = filename + imageid 
+        img = load_image(img_dir + imageid)[:,:,:3]
+
 
         img_prediction = get_prediction(img)
         oimg = make_img_overlay(img, img_prediction)
@@ -361,11 +380,11 @@ def main(argv=None):  # pylint: disable=unused-argument
                                padding='SAME')
 
         # Uncomment these lines to check the size of each layer
-        # print 'data ' + str(data.get_shape())
-        # print 'conv ' + str(conv.get_shape())
-        # print 'relu ' + str(relu.get_shape())
-        # print 'pool ' + str(pool.get_shape())
-        # print 'pool2 ' + str(pool2.get_shape())
+        #print('data ' + str(data.get_shape()))
+        #print('conv ' + str(conv.get_shape()))
+        #print('relu ' + str(relu.get_shape()))
+        #print('pool ' + str(pool.get_shape()))
+        #print('pool2 ' + str(pool2.get_shape()))
 
         # Reshape the feature map cuboid into a 2D matrix to feed it to the
         # fully connected layers.
@@ -515,7 +534,7 @@ def main(argv=None):  # pylint: disable=unused-argument
                 print("Model saved in file: %s" % save_path)
 
         print("Running prediction on training set")
-        prediction_training_dir = "predictions_training/"
+        prediction_training_dir = "/Users/abiola/Documents/EPFL/ML_Project2_Road_Segmentation/Ressources/training/predictions_training/"
         if not os.path.isdir(prediction_training_dir):
             os.mkdir(prediction_training_dir)
         for i in range(1, TRAINING_SIZE + 1):
