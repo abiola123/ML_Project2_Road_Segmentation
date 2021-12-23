@@ -41,6 +41,8 @@ def networkAccuracyTesting(model_path,test_images_path,submission_path,submissio
     pred = ((pred > 0.25).astype(np.uint8)).reshape((400,400))
 
     pred = cv2.resize(pred, (608,608), interpolation = 0)
+    
+    plt.imsave(os.path.join(prediction_path + "test_" + str(i+1) + ".png"),pred,cmap='Greys_r')
 
 
   print("Generating CSV for submission...")
@@ -48,7 +50,7 @@ def networkAccuracyTesting(model_path,test_images_path,submission_path,submissio
   submission_filename = submission_filename
   image_filenames = []
   for i in range(1, 51):
-    image_filename = test_images_path + "test_" + str(i) + '.png'
+    image_filename = prediction_path + "test_" + str(i) + '.png'
     image_filenames.append(image_filename)
   masks_to_submission(submission_filename, *image_filenames)
 
