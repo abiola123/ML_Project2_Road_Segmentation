@@ -17,7 +17,7 @@ The project is structured as follows:
 |   ├── run.py                      # Files that generate our best submissions 
 │   ├── custom_unet.py	            # Shell for creating and tuning our U-Net architecture
 │   ├── data_expansion.py	          # Generate new data
-│   ├── helper.py				            # General functions 
+│   ├── helper.py				# General functions 
 │   ├── network_accuracy_testing.py	# Method that generates submissions
 │   ├── transfer_learning_unet.py   # Shell for creating and tuning Pretrained models
 ├── KerasUNet.ipynb                	# Used for experimental purposes (hyperparameter optimization and visualization of the training process)
