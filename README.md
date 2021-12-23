@@ -5,6 +5,7 @@
 Road segmentation, which is the process of identifying roads on satellite imagery, is part of Image Segmentation. 
 This project has been developed in the context of the Machine Learning course CS-433 at EPFL. The aim of this project is to
 train a classifier to differentiate roads from background on satellite images.
+For further informations, feel free to have a look to our report. 
 
 ## Project structure
 
