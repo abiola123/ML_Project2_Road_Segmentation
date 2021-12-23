@@ -31,9 +31,6 @@ The code has been trained using:
 - Numpy
 - Matplotlib
 
-## Data set
-
-
 ### Authors
 - Abiola Adeye
 - Abdeslam Guessous
