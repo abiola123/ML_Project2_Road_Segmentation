@@ -10,9 +10,7 @@ train a classifier to differentiate roads from background on satellite images.
 
 The project is structured as follows:
 
-```
-.
-├── Course_Example # Code provided by the course      	
+```	
 ├── src # Source code directory
 |   ├── run.py # Files that generate our best submissions 
 │   ├── custom_unet.py # Shell for creating and tuning our U-Net architecture
