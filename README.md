@@ -12,16 +12,15 @@ The project is structured as follows:
 
 ```
 .
-├── Course_Example                 	# 
-│   ├── Pre Trained.ipynb         		#        	
-├── src                			# Source code directory
-│   ├── custom_unet.py	      # 
-│   ├── data_expansion.py	    # 
-│   ├── helper.py				      # General functions 
-│   ├── network_accuracy_testing.py	# 
-│   ├── transfer_learning_unet.py # 
-├── KerasUNet.ipynb                	# 
-└── README.md
+├── Course_Example                 	# Code provided by the course      	
+├── src                			        # Source code directory
+|   ├── run.py                      # Files that generate our best submissions 
+│   ├── custom_unet.py	            # Shell for creating and tuning our U-Net architecture
+│   ├── data_expansion.py	          # Generate new data
+│   ├── helper.py				            # General functions 
+│   ├── network_accuracy_testing.py	# Mtd qui genere submissions
+│   ├── transfer_learning_unet.py   # Shell for creating and tuning Pretrained models
+├── KerasUNet.ipynb                	# Used for experimental purposes (hyperparameter optimization and visualization of the training process)
 ```
 
 ## Requirements
