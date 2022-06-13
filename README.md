@@ -3,8 +3,11 @@
 ## Introduction
 
 This repository shows and documents our attempt at solving the EPFL Road Segmentation Challenge on AICrowd: https://www.aicrowd.com/challenges/epfl-ml-road-segmentation
+
 This project has been developed in the context of the Machine Learning course CS-433 at EPFL.
+
 The aim of this project is to train a classifier to differentiate roads from background noise on satellite images.
+
 Further information is available in our report.
 
 ## Project structure
