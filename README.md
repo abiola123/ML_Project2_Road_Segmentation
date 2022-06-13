@@ -36,9 +36,11 @@ The code has been trained and tested using:
 
 ## Instructions
 
+```
 git clone <repo_url> // clone the repo
 cd src
 python run.py (To be used for course evaluation)
+```
 
 ## Training Hardware
 
