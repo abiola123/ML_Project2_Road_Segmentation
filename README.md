@@ -11,6 +11,7 @@ Further information is available in our report.
 
 The project is structured as follows:
 
+```
 ├── src # Source code directory
 | ├── run.py # File that runs the whole training pipeline and generates the submission file for the competition
 │ ├── custom_unet.py # Shell for creating and tuning our U-Net architecture
@@ -19,6 +20,7 @@ The project is structured as follows:
 │ ├── network_accuracy_testing.py # Method that generates submissions
 │ ├── transfer_learning_unet.py # Shell for creating and tuning Pretrained models
 ├── KerasUNet.ipynb # Used for experimental purposes (hyperparameter optimization and visualization of the training process)
+```
 
 ## Requirements
 
